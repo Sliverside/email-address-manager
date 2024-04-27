@@ -1,0 +1,41 @@
+@layout({title: 'Email addresses'})
+  <section>
+    <table>
+      <thead>
+        <tr>
+          <th>Email address</th>
+          <th>Provider</th>
+          <th>Password</th>
+          <th>Status</th>
+          <th>Description</th>
+          <th>actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(email in emails)
+          <tr id="emailAddress-{{ email.id }}" class="emailAddress {{ email.status }}">
+            <td><h4>{{ email }}</h4></td>
+            <td>{{ email.supplierName }}</td>
+            <td>{{ email.password ?? '' }}</td>
+            <td>{{ email.status }}</td>
+            <td>{{ email.description ?? '' }}</td>
+            <td>
+              @if(email.isActive)
+                <a
+                  href="{{ route('emails.edit', email) }}"
+                  up-layer="new modal"
+                  up-accept-location="{{ route('emails') }}"
+                  up-on-accepted="up.reload('#emailAddress-{{ email.id }}')"
+                ><b>Edit</b></a>
+                <form class="inline-form" up-submit up-disable method="POST" action="{{ route('emails.trash', email) }}?_method=DELETE">
+                  {{ csrfField() }}
+                  <button>Trash</button>
+                </form>
+              @end
+            </td>
+          </aside>
+        @end
+      </tbody>
+    </table>
+  </section>
+@end

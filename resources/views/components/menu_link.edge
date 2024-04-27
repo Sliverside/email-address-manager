@@ -1,0 +1,13 @@
+<li>
+  <a {{ $props.except(['type']).merge({
+    'up-follow': true,
+    'up-transition': 'fade-out/none',
+    class: {
+      'up-current': $props.href === request.url(),
+    }
+  }).toAttrs() }}>
+    {{{ $props.type === 'button' ? '<b>' : '' }}}
+      {{ $props.label }}
+    {{{ $props.type === 'button' ? '</b>' : '' }}}
+  </a>
+</li>

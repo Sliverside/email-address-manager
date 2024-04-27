@@ -1,0 +1,12 @@
+@layout({title: email + ' (' + email.supplierName + ')'})
+  <h1>{{ email }}</h1>
+  <p>
+    provider: {{ email.supplierName }}<br>
+    status: {{ email.status }}<br>
+    description: {{ email.description }}<br>
+    password: {{ email.password }}
+  </p>
+  @if(email.isActive)
+    <a href="{{ route('emails.edit', email) }}" up-follow><b>Edit</b></a>
+  @end
+@end

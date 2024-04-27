@@ -1,0 +1,22 @@
+@layout({title: 'Create a new email address'})
+  <h1>Create a new email address</h1>
+  <form id="createForm" method="post" action="{{ route('emails.store') }}" up-submit up-target="#createForm" up-disable>
+    {{ csrfField() }}
+    @!input({
+      label: 'Supplier',
+      type: 'select',
+      name: 'supplierName',
+      options: [ { label: '-- Choose a supplier --' } ].concat(suppliers)
+    })
+    @!input({name: 'name', placeholder: 'name', value: faker?.person?.firstName() })
+    @!input({name: 'domain', placeholder: 'domain', value: faker?.internet?.domainName() })
+    @!input({
+      type: 'password',
+      name: 'password',
+      placeholder: 'password',
+      value: faker?.internet?.password(),
+      autocomplete: 'off'
+    })
+    <button type="submit">Create</button>
+  </form>
+@end

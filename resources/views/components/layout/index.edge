@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:">
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ $props.title }}</title>
+  @vite(['resources/js/app.js'])
+</head>
+<body>
+  <header>
+    <nav up-nav>
+      <ul>
+        @!menuLink({href: route('emails'), label: 'Email addresses'})
+        @!menuLink({
+          href: route('emails.create'),
+          label: 'Create an email address',
+          'up-layer': 'new modal',
+          'up-accept-location': route('emails'),
+          'up-on-accepted': "up.reload('main')",
+          type: 'button'
+        })
+      </ul>
+    </nav>
+  </header>
+  <hr>
+  <main up-main>
+    <div up-flashes style="display:none" hidden aria-hidden="true">
+        @error('error')
+          <div class="toastKeeper error">{{ $message }}</div>
+        @end
+        @error('E_BAD_CSRF_TOKEN')
+          <div class="toastKeeper error">{{ $message }}</div>
+        @end
+        @flashMessage('success')
+          <div class="toastKeeper success">{{ $message }}</div>
+        @end
+    </div>
+    {{{ await $slots.main() }}}
+  </main>
+</body>
+</html>

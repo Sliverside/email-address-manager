@@ -1,10 +1,105 @@
-* {
-  margin: 0;
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+nav {
+  margin-bottom: 0;
+}
+
+header nav ul li a.up-active,
+header nav ul li a.up-current {
+  filter: brightness(0.5);
+}
+
+header+hr {
+  margin-top: 0;
+}
+
+hr+main {
+  padding-top: 0;
+}
+
+
+form {
+  display: inline-block;
+}
+
+form.up-loading button[type="submit"] {
+  position: relative;
+  color: transparent;
+  background-color: var(--color-link);
+}
+
+form.up-loading button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+  width: 1em;
+  height: 1em;
+  border: 0.1em solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 500ms linear infinite;
+}
+
+.inputError {
+  color: red;
+}
+
+input+.inputError,
+textarea+.inputError,
+select+.inputError {
+  margin-top: -0.7rem;
+}
+
+a b,
+a em,
+a i,
+a strong,
+button,
+input[type="submit"] {
+  padding: 0.2rem 1rem;
+}
+
+up-modal-viewport {
+  align-items: center;
+}
+
+up-modal-content>main {
   padding: 0;
 }
 
-html,
-body {
-  height: 100%;
-  width: 100%;
+up-modal-content>main h1:first-child {
+  margin-top: 0;
+}
+
+up-modal-content>main>form {
+  display: block;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.emailAddress.archived,
+.emailAddress.trashed {
+  opacity: 0.5;
+}
+
+.inline-form {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  display: inline-block;
 }
