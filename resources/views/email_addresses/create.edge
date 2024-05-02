@@ -3,13 +3,36 @@
   <form id="createForm" method="post" action="{{ route('emails.store') }}" up-submit up-target="#createForm" up-disable>
     {{ csrfField() }}
     @!input({
+      class: 'supplierInput',
       label: 'Supplier',
       type: 'select',
       name: 'supplierName',
-      options: [ { label: '-- Choose a supplier --' } ].concat(suppliers)
+      options: [ { label: '-- Choose a supplier --' } ]
+        .concat(suppliers.map((s) => ({ value: s.name })))
     })
-    @!input({name: 'name', placeholder: 'name', value: faker?.person?.firstName() })
-    @!input({name: 'domain', placeholder: 'domain', value: faker?.internet?.domainName() })
+    @!input({
+        'data-supplier': '',
+      class: 'domainInput',
+      placeholder: 'domain',
+      type: 'select',
+      disabled: true,
+      options:  [ { label: '-- Choose a domain --' } ]
+    })
+    @each(supplier in suppliers)
+      @!input({
+        'data-supplier': supplier.name,
+        class: 'domainInput',
+        style: 'display:none',
+        placeholder: 'domain',
+        type: 'select',
+        options:  [ { label: '-- Choose a domain --' } ].concat(supplier.domains)
+      })
+    @end
+    @!input({
+      name: 'name',
+      placeholder: 'name',
+      value: faker?.person?.firstName()
+    })
     @!input({
       type: 'password',
       name: 'password',

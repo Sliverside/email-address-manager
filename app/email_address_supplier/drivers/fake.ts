@@ -25,14 +25,7 @@ class FakeEmailAddress extends SupplierEmailAddress {
   }
 }
 
-const fakeEmailAddresses: FakeSupplierEmailAddress[] = [
-  {
-    name: 'lilian.moulanier',
-    domain: 'outlook.fr',
-    password: 'fgdfgdfgdfgdfg',
-    description: 'description',
-  },
-]
+const fakeEmailAddresses: FakeSupplierEmailAddress[] = []
 
 const emailAddresses: Map<string, FakeSupplierEmailAddress> = new Map(
   fakeEmailAddresses.map((e) => {
@@ -41,6 +34,11 @@ const emailAddresses: Map<string, FakeSupplierEmailAddress> = new Map(
 )
 
 export class Fake implements EmailAddressSupplierContract {
+  async listDomains(): Promise<EmailAddressDomain[]> {
+    return ['fake.test', 'test.fake', 'example.com', 'exemple.fr'].map(
+      (d) => d as EmailAddressDomain
+    )
+  }
   readonly name = supplierName
   async list(): Promise<FakeEmailAddress[]> {
     return Array.from(emailAddresses.values()).map(({ name, domain, description }) => {

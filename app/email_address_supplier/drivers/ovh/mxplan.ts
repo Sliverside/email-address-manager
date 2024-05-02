@@ -1,8 +1,5 @@
-import {
-  EmailAddressAlreadyExistError,
-  EmailAddressDoesntExistError,
-  EmailAddressProviderError,
-} from '../../errors.js'
+import { EmailAddressDoesntExistError, EmailAddressSupplierError } from '../../errors.js'
+import { SupplierEmailAddress } from '../../supplier_email_address.js'
 import type {
   EmailAddressSupplierContract,
   EmailAddressDomain,
@@ -12,35 +9,46 @@ import type {
   EmailAddressData,
   EmailAddressSupplierName,
 } from '../../types.js'
-import { OvhEmailAddress } from './index.js'
+import { ovhRequest } from './api.js'
 
-const supplierName: EmailAddressSupplierName = 'ovh'
+const supplierName: EmailAddressSupplierName = 'ovh.mxplan'
+
+class OvhEmailAddress extends SupplierEmailAddress {
+  constructor(data: EmailAddressData) {
+    super(data, supplierName)
+  }
+}
 
 export class OvhMxplan implements EmailAddressSupplierContract {
   readonly name = supplierName
 
-  constructor(private ovhAPI: any) {}
   async list(): Promise<OvhEmailAddress[]> {
-    return new Promise((resolve) => {
-      this.ovhAPI.request(
-        'GET',
-        '/email/domain/ptigui.li/account',
-        async (err: string | number | null, accounts: string[]) => {
-          if (err !== null) throw new Error('Error while loading email addresses from OVH API')
-
-          resolve(
-            Promise.all(
-              accounts.map((name) =>
-                this.get({
-                  name: name as EmailAddressName,
-                  domain: 'ptigui.li' as EmailAddressDomain,
-                })
-              )
+    return this.listDomains()
+      .then((domains) => {
+        return domains.map((domain) =>
+          ovhRequest('GET', `/email/domain/${domain}/account`)
+            .then((accounts: string[]) =>
+              accounts.map((name) => ({ domain, name: name as EmailAddressName }))
             )
-          )
-        }
-      )
-    })
+            .then((accounts) => Promise.all(accounts.map((account) => this.get(account))))
+        )
+      })
+      .then(async (a) => {
+        const emailAddresses = await Promise.all(a)
+        return emailAddresses.flat()
+      })
+      .catch((error) => {
+        let errorMessage = `failed to get email addresses.`
+        if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
+
+        throw new EmailAddressSupplierError(errorMessage)
+      })
+  }
+
+  async listDomains(): Promise<EmailAddressDomain[]> {
+    return ovhRequest('GET', '/email/domain').then((domains: string[]) =>
+      domains.map((domain) => domain as EmailAddressDomain)
+    )
   }
 
   async get({
@@ -50,47 +58,32 @@ export class OvhMxplan implements EmailAddressSupplierContract {
     name: EmailAddressName
     domain: EmailAddressDomain
   }): Promise<OvhEmailAddress> {
-    return new Promise((resolve, reject) => {
-      this.ovhAPI.request(
-        'GET',
-        `/email/domain/${domain}/account/${name}`,
-        (err: string | number | null, accountDetail: any) => {
-          if (err !== null) {
-            reject(new Error('Error while loading email address detail from OVH API'))
-          }
+    return ovhRequest('GET', `/email/domain/${domain}/account/${name}`)
+      .then((accountDetail) => {
+        return new OvhEmailAddress({
+          name,
+          domain,
+          description: accountDetail.description || null,
+        })
+      })
+      .catch((error) => {
+        let errorMessage = `failed to retrieve "${name}@${domain}".`
+        if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
 
-          resolve(
-            new OvhEmailAddress({
-              name,
-              domain,
-              description: accountDetail.description || null,
-            })
-          )
-        }
-      )
-    })
+        throw new EmailAddressSupplierError(errorMessage)
+      })
   }
 
   async create({ domain, name, description, password }: Required<EmailAddressData>): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ovhAPI.request(
-        'POST',
-        `/email/domain/${domain}/account`,
-        { accountName: name, description, password },
-        (err: string | number | null, res: any) => {
-          if (err !== null) {
-            console.log(err, res)
+    return ovhRequest('POST', `/email/domain/${domain}/account`, {
+      accountName: name,
+      description,
+      password,
+    }).catch((error) => {
+      let errorMessage = `failed to create "${name}@${domain}".`
+      if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
 
-            let message = 'Error while creating email address from OVH API'
-
-            if (res && typeof res.message === 'string') message += ': ' + res.message
-
-            reject(new EmailAddressProviderError(message))
-          } else {
-            resolve()
-          }
-        }
-      )
+      throw new EmailAddressSupplierError(errorMessage)
     })
   }
 
@@ -98,53 +91,47 @@ export class OvhMxplan implements EmailAddressSupplierContract {
     { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
     data: EmailAddressEditPayload
   ): Promise<void> {
-    const ovhEmailAddress = this.get({ name, domain })
+    return new Promise(async (resolve, reject) => {
+      const ovhEmailAddress = this.get({ name, domain })
 
-    if (!ovhEmailAddress) {
-      return Promise.reject(new EmailAddressDoesntExistError(`${name}@${domain}`, supplierName))
-    }
-
-    if (typeof data.description === 'string') {
-      let error: string | number | null = null
-      let result: any = null
-
-      await new Promise(() => {
-        this.ovhAPI.request(
-          'PUT',
-          `/email/domain/${domain}/account/${name}`,
-          { description: data.description },
-          (err: string | number | null, res: any) => {
-            error = err
-            result = res
-          }
-        )
-      })
-
-      if (error !== null) {
-        console.log(error, result)
-
-        return Promise.reject(
-          new Error(`failed to update description for "${name}@${domain}", OVH error: ${error}`)
-        )
+      if (!ovhEmailAddress) {
+        reject(new EmailAddressDoesntExistError(`${name}@${domain}`, supplierName))
       }
-    }
 
-    if (data.password) {
-      const error = await new Promise((resolve) => {
-        this.ovhAPI.request(
-          'POST',
-          `/email/domain/${domain}/account/${name}/changePassword`,
-          { password: data.password },
-          (err: string | number | null) => resolve(err !== null ? err : null)
-        )
-      })
+      if (typeof data.description === 'string') {
+        let failed = false
 
-      if (error !== null) {
-        return Promise.reject(
-          new Error(`failed to update password for "${name}@${domain}", OVH error: ${error}`)
-        )
+        await ovhRequest('PUT', `/email/domain/${domain}/account/${name}`, {
+          description: data.description,
+        }).catch((error) => {
+          let errorMessage = `failed to update description for "${name}@${domain}".`
+          if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
+
+          reject(new EmailAddressSupplierError(errorMessage))
+          failed = true
+        })
+
+        if (failed) return
       }
-    }
+
+      if (data.password) {
+        let failed = false
+
+        await ovhRequest('POST', `/email/domain/${domain}/account/${name}/changePassword`, {
+          password: data.password,
+        }).catch((error) => {
+          let errorMessage = `failed to update password for "${name}@${domain}".`
+          if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
+
+          reject(new EmailAddressSupplierError(errorMessage))
+          failed = true
+        })
+
+        if (failed) return
+      }
+
+      resolve()
+    })
   }
 
   async changePassword(
@@ -161,18 +148,11 @@ export class OvhMxplan implements EmailAddressSupplierContract {
     name: EmailAddressName
     domain: EmailAddressDomain
   }): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ovhAPI.request(
-        'DELETE',
-        `/email/domain/${domain}/account/${name}`,
-        (err: string | number | null) => {
-          if (err !== null) {
-            reject(Error('Error while deleting email address from OVH API'))
-          } else {
-            resolve()
-          }
-        }
-      )
+    return ovhRequest('DELETE', `/email/domain/${domain}/account/${name}`).catch((error) => {
+      let errorMessage = `failed to delete "${name}@${domain}".`
+      if (error instanceof EmailAddressSupplierError) errorMessage += ' ' + error.message
+
+      throw new EmailAddressSupplierError(errorMessage)
     })
   }
 }

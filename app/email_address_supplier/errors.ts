@@ -16,4 +16,4 @@ export class EmailAddressAlreadyExistError extends Error {
   }
 }
 
-export class EmailAddressProviderError extends Error {}
+export class EmailAddressSupplierError extends Error {}

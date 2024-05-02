@@ -3,10 +3,10 @@ import EmailAddressService from '#services/email_address_service'
 import { updateEmailValidator } from '#validators/email_address'
 import { createSupplierEmailValidator } from '#validators/supplier_email_address'
 import type { HttpContext } from '@adonisjs/core/http'
-import { suppliersNames } from '../email_address_supplier/index.js'
+import { suppliers } from '../email_address_supplier/index.js'
 import {
-  EmailAddressAlreadyExistError,
   EmailAddressDoesntExistError,
+  EmailAddressSupplierError,
 } from '../email_address_supplier/errors.js'
 import db from '@adonisjs/lucid/services/db'
 
@@ -29,7 +29,14 @@ export default class EmailsController {
    */
   async create({ view }: HttpContext) {
     return view.render('email_addresses/create', {
-      suppliers: suppliersNames.map((v) => ({ value: v })),
+      suppliers: await Promise.all(
+        suppliers.map((s) =>
+          s.listDomains().then((domains) => ({
+            name: s.name,
+            domains: domains.map((domain) => ({ value: domain })),
+          }))
+        )
+      ),
     })
   }
 
@@ -53,7 +60,10 @@ export default class EmailsController {
     if (failure) {
       let message = 'an error append while creating email address'
 
-      if (error instanceof EmailAddressAlreadyExistError) {
+      if (
+        error instanceof EmailAddressDoesntExistError ||
+        error instanceof EmailAddressSupplierError
+      ) {
         message = error.message
       }
 
@@ -142,7 +152,10 @@ export default class EmailsController {
     if (failure) {
       let message = 'An error append while editing the email address'
 
-      if (error instanceof EmailAddressDoesntExistError) {
+      if (
+        error instanceof EmailAddressDoesntExistError ||
+        error instanceof EmailAddressSupplierError
+      ) {
         message = error.message
       }
 
@@ -189,7 +202,10 @@ export default class EmailsController {
     if (failure) {
       let message = 'An error append while deleting the email address'
 
-      if (error instanceof EmailAddressDoesntExistError) {
+      if (
+        error instanceof EmailAddressDoesntExistError ||
+        error instanceof EmailAddressSupplierError
+      ) {
         message = error.message
       }
 

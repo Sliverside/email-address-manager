@@ -1,36 +1,41 @@
-@let(id = cuid())
 @let(value = old($props.name) || $props.value || null)
 
-<label for="{{ id }}">{{ $props.label || $props.placeholder || '' }}</label>
-@if($props.type === 'select')
-  <select {{ html.attrs({
-    id: id,
-    name: $props.name,
-    value: value,
-  }) }}>
-    @each(option in options)
-      <option {{ html.attrs({
-        value: option.value || '',
-        selected: value !== null && value === option.value,
-      }) }}>
-        {{ option.label || option.value || '' }}
-      </option>
+<label {{
+  $props
+    .except(['label','placeholder','name','value','type','autocomplete','disabled','options'])
+    .toAttrs()
+}}>
+  {{ $props.label || $props.placeholder || '' }}
+  @if($props.type === 'select')
+    <select {{ html.attrs({
+      name: $props.name,
+      value: value,
+      disabled: $props.disabled
+    }) }}>
+      @each(option in options)
+        <option {{ html.attrs({
+          value: option.value || '',
+          selected: value !== null && value === option.value,
+        }) }}>
+          {{ option.label || option.value || '' }}
+        </option>
+      @end
+    </select>
+  @else
+    <input {{ html.attrs({
+      id: id,
+      type: $props.type,
+      name: $props.name,
+      placeholder: $props.placeholder,
+      value: value,
+      autocomplete: $props.autocomplete
+    }) }}>
     @end
-  </select>
-@else
-  <input {{ html.attrs({
-    id: id,
-    type: $props.type,
-    name: $props.name,
-    placeholder: $props.placeholder,
-    value: value,
-    autocomplete: $props.autocomplete
-  }) }}>
+  
+  
+  @inputError($props.name)
+    @each(message in $messages)
+      <p class="inputError">{{ message }}</p>
+    @end
   @end
-
-
-@inputError($props.name)
-  @each(message in $messages)
-    <p class="inputError">{{ message }}</p>
-  @end
-@end
+</label>

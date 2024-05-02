@@ -9,3 +9,26 @@ up.compiler('.toastKeeper', function (/** @type {HTMLElement} */ element) {
   else if (element.classList.contains('success')) Toastr.success(element.innerHTML)
   else Toastr.info(element.innerHTML)
 })
+
+up.compiler('.supplierInput select', function (/** @type {HTMLSelectElement} */ element) {
+  handleSupplierValue(element)
+  element.addEventListener('input', () => handleSupplierValue(element))
+  element.addEventListener('change', () => handleSupplierValue(element))
+})
+
+/**
+ *
+ * @param {HTMLSelectElement} select
+ */
+function handleSupplierValue(select) {
+  /** @type {NodeListOf<HTMLElement>} */
+  const domainInputs = document.querySelectorAll('.domainInput')
+
+  domainInputs.forEach((input) => {
+    const isCurrent = select.value === input.dataset.supplier
+    input.style.display = isCurrent ? '' : 'none'
+    const domainSelect = input.querySelector('select')
+
+    if (domainSelect) domainSelect.name = isCurrent ? 'domain' : ''
+  })
+}
