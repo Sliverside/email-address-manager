@@ -53,7 +53,7 @@ form.up-loading button[type="submit"]::before {
 }
 
 .inputError {
-  color: red;
+  color: #BD362F;
 }
 
 input+.inputError,
@@ -92,7 +92,9 @@ up-modal-content>main>form {
 
 .emailAddress.archived,
 .emailAddress.trashed {
-  opacity: 0.5;
+  text-decoration: line-through;
+  --color-text: #999;
+  color: var(--color-text);
 }
 
 .inline-form {
@@ -101,4 +103,23 @@ up-modal-content>main>form {
   border: none;
   box-shadow: none;
   display: inline-block;
+}
+
+.status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  --status-color-rgb: 204, 204, 204;
+  background-color: rgb(var(--status-color-rgb));
+  box-shadow: 0 0 2px rgba(var(--status-color-rgb), 0.3);
+}
+
+.status--active {
+  --status-color-rgb: 81, 163, 81;
+}
+
+.status--trashed,
+.status--archived {
+  --status-color-rgb: 189, 54, 47;
 }

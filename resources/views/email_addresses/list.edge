@@ -6,7 +6,6 @@
           <th>Email address</th>
           <th>Provider</th>
           <th>Password</th>
-          <th>Status</th>
           <th>Description</th>
           <th>actions</th>
         </tr>
@@ -14,10 +13,9 @@
       <tbody>
         @each(email in emails)
           <tr id="emailAddress-{{ email.id }}" class="emailAddress {{ email.status }}">
-            <td><h4>{{ email }}</h4></td>
+            <td><h4><span class="status status--{{ email.status }}"></span> {{ email }}</h4></td>
             <td>{{ email.supplierName }}</td>
             <td>{{ email.password ?? '' }}</td>
-            <td>{{ email.status }}</td>
             <td>{{ email.description ?? '' }}</td>
             <td>
               @if(email.isActive)
