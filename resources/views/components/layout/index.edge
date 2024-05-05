@@ -29,7 +29,11 @@
           @!menuLink({href: route('auth.register.show'), label: 'Register'})
           @!menuLink({href: route('auth.login.show'), label: 'Login'})
         @else
-          <li>Hello {{ auth.user.email }}</li>
+          <li>
+            Hello
+            [{{ await auth.user.load('role').then(() => auth.user.role.name) }}]
+            {{ auth.user.email }}
+          </li>
           <li>
             <form
               class="inline-form"

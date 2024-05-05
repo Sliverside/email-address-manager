@@ -14,9 +14,11 @@ export default class RegisterController {
     return view.render('auth/register')
   }
 
-  async store({ request, response, session }: HttpContext) {
+  async store({ auth, request, response, session }: HttpContext) {
     const data = await validator.validate(request.all())
-    await User.create(data)
+    const user = await User.create(data)
+
+    await auth.use('web').login(user)
 
     session.flash({
       success: `your account has been created with success !`,

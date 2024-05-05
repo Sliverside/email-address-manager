@@ -11,6 +11,9 @@ importers:
       '@adonisjs/auth':
         specifier: ^9.2.1
         version: 9.2.1(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))(@adonisjs/lucid@20.6.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))(better-sqlite3@9.6.0)(luxon@3.4.4))(@adonisjs/session@7.4.0(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))(edge.js@6.0.2))(@japa/plugin-adonisjs@3.0.1(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))(@japa/runner@3.1.4))
+      '@adonisjs/bouncer':
+        specifier: ^3.1.2
+        version: 3.1.2(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))
       '@adonisjs/core':
         specifier: ^6.9.0
         version: 6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2)
@@ -155,6 +158,18 @@ packages:
     engines: {node: '>=18.16.0'}
     peerDependencies:
       '@adonisjs/http-server': ^7.0.2
+
+  '@adonisjs/bouncer@3.1.2':
+    resolution: {integrity: sha512-DEVLTnc+TnIsJe2rojgBzpnmjNCSOBRJHqyVxn1vi/VCPe3NmTkHl4GJRBUrW6wdM1ARGZ3RiA5f3y4inUutCg==}
+    engines: {node: '>=18.16.0'}
+    peerDependencies:
+      '@adonisjs/core': ^6.2.0
+      '@adonisjs/i18n': ^2.0.0
+    peerDependenciesMeta:
+      '@adonisjs/core':
+        optional: true
+      '@adonisjs/i18n':
+        optional: true
 
   '@adonisjs/config@5.0.2':
     resolution: {integrity: sha512-NXjFqDHNGRTZ1EnA4zr20GFEt7qw/JvZ4ZV8/PzFyVc7dPoFprpoyE3bw7kmlKHhcQdBbF7YXCGB4q+HQUnqiQ==}
@@ -3364,6 +3379,12 @@ snapshots:
       media-typer: 1.1.0
       qs: 6.12.1
       raw-body: 2.5.2
+
+  '@adonisjs/bouncer@3.1.2(@adonisjs/core@6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2))':
+    dependencies:
+      '@poppinss/utils': 6.7.3
+    optionalDependencies:
+      '@adonisjs/core': 6.9.0(@adonisjs/assembler@7.5.1(typescript@5.4.5))(@vinejs/vine@2.0.0)(edge.js@6.0.2)
 
   '@adonisjs/config@5.0.2':
     dependencies:
