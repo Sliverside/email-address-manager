@@ -6,7 +6,7 @@ export default class LogMiddleware {
     /**
      * Middleware logic goes here (before the next call)
      */
-    console.log(ctx.request.completeUrl(true))
+    console.log(ctx.request.method() + ' ' + ctx.request.completeUrl(true))
 
     /**
      * Call next method in the pipeline and return its output

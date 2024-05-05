@@ -1,6 +1,5 @@
-import { cuid } from '@adonisjs/core/helpers'
 import type { Opaque } from '@adonisjs/core/types/helpers'
-import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 import type {
   EmailAddressDomain,
   EmailAddressName,
@@ -42,11 +41,6 @@ export default class EmailAddress extends BaseModel {
 
   @column()
   declare description: string | null
-
-  @beforeCreate()
-  static assignUuid(email: EmailAddress) {
-    email.id = cuid() as EmailAddressID
-  }
 
   get uniqueString() {
     return `${this.supplierName}:${this.name}@${this.domain}`

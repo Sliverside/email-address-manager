@@ -1,6 +1,6 @@
 @layout({title: 'Edit ' + email + ' (' + email.supplierName + ')'}) 
   <h1>Edit {{ email }} ({{ email.supplierName }})</h1>
-  <form id="editForm" method="post" action="{{ route('emails.update', email) }}" up-submit up-target="#editForm" up-disable>
+  <form id="editForm" method="post" action="{{ route('emails.update', email) }}?_method=PATCH" up-submit up-target="#editForm" up-disable>
     {{ csrfField() }}
     @!input({name: 'description', placeholder: 'description', value: old('description') || email.description })
     @!input({name: 'password', placeholder: 'password' })

@@ -1,0 +1,14 @@
+@layout({title: 'Login'})
+  <h1>Login</h1>
+    <form method="post" action="{{ route('auth.login.store') }}" up-submit up-target="body" up-disable>
+      {{ csrfField() }}
+      @!input({ label: 'Email', name: 'email', type: 'email' })
+      @!input({ label: 'Password', name: 'password', type: 'password' })
+
+      <button type="submit">Login</button>
+   </form>
+   <p>
+    If you don't have an account yet,
+    <a href="{{ route('auth.register.show') }}" up-follow>register</a>.
+   </p>
+@end

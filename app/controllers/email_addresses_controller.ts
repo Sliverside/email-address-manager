@@ -87,7 +87,7 @@ export default class EmailsController {
       success: `the email address "${emailAddress}" has been created with success !`,
     })
 
-    response.redirect().toRoute('emails')
+    response.redirect().toRoute('emails.index')
   }
 
   /**
@@ -100,7 +100,7 @@ export default class EmailsController {
       session.flashErrors({
         error: "this email doesn't exist",
       })
-      response.redirect().toRoute('emails')
+      response.redirect().toRoute('emails.index')
       return
     }
 
@@ -115,7 +115,7 @@ export default class EmailsController {
 
     if (!email) {
       session.flashErrors({ error: "this email doesn't exist" })
-      response.redirect().toRoute('emails')
+      response.redirect().toRoute('emails.index')
       return
     }
 
@@ -173,7 +173,7 @@ export default class EmailsController {
       success: `the email address "${email}" has been updated with success !`,
     })
 
-    response.redirect().toRoute('emails')
+    response.redirect().toRoute('emails.index')
   }
 
   /**
@@ -222,6 +222,6 @@ export default class EmailsController {
       success: `the email address "${email}" has been trashed !`,
     })
 
-    response.redirect().toRoute('emails')
+    response.redirect().toRoute('emails.index')
   }
 }

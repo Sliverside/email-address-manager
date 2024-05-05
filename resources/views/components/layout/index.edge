@@ -12,15 +12,38 @@
   <header>
     <nav up-nav>
       <ul>
-        @!menuLink({href: route('emails'), label: 'Email addresses'})
-        @!menuLink({
-          href: route('emails.create'),
-          label: 'Create an email address',
-          'up-layer': 'new modal',
-          'up-accept-location': route('emails'),
-          'up-on-accepted': "up.reload('main')",
-          type: 'button'
-        })
+        @!menuLink({href: route('home'), label: 'Home'})
+        @if(auth.isAuthenticated)
+          @!menuLink({href: route('emails.index'), label: 'Email addresses'})
+          @!menuLink({
+            href: route('emails.create'),
+            label: 'Create an email address',
+            'up-layer': 'new modal',
+            'up-accept-location': route('emails.index'),
+            'up-on-accepted': "up.reload('main')"
+          })
+        @end
+      </ul>
+      <ul>
+        @if(!auth.isAuthenticated)
+          @!menuLink({href: route('auth.register.show'), label: 'Register'})
+          @!menuLink({href: route('auth.login.show'), label: 'Login'})
+        @else
+          <li>Hello {{ auth.user.email }}</li>
+          <li>
+            <form
+              class="inline-form"
+              method="post"
+              action="{{ route('auth.logout') }}?_method=DELETE"
+              up-target="body"
+              up-submit
+              up-disable
+            >
+              {{ csrfField() }}
+              <button type="submit">Logout</button>
+            </form>
+          </li>
+        @end
       </ul>
     </nav>
   </header>
