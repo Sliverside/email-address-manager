@@ -3,11 +3,11 @@ import EmailAddressService from '#services/email_address_service'
 import { updateEmailValidator } from '#validators/email_address'
 import { createSupplierEmailValidator } from '#validators/supplier_email_address'
 import type { HttpContext } from '@adonisjs/core/http'
-import { suppliers } from '../email_address_supplier/index.js'
+import { suppliers } from '#email_address_supplier/index'
 import {
   EmailAddressDoesntExistError,
   EmailAddressSupplierError,
-} from '../email_address_supplier/errors.js'
+} from '#email_address_supplier/errors'
 import db from '@adonisjs/lucid/services/db'
 
 export default class EmailsController {

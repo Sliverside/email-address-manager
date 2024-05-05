@@ -1,5 +1,8 @@
-import { EmailAddressDoesntExistError, EmailAddressSupplierError } from '../../errors.js'
-import { SupplierEmailAddress } from '../../supplier_email_address.js'
+import {
+  EmailAddressDoesntExistError,
+  EmailAddressSupplierError,
+} from '#email_address_supplier/errors'
+import { SupplierEmailAddress } from '#email_address_supplier/supplier_email_address'
 import type {
   EmailAddressSupplierContract,
   EmailAddressDomain,
@@ -8,7 +11,7 @@ import type {
   EmailAddressEditPayload,
   EmailAddressData,
   EmailAddressSupplierName,
-} from '../../types.js'
+} from '#email_address_supplier/types'
 import { ovhRequest } from './api.js'
 
 const supplierName: EmailAddressSupplierName = 'ovh.mxplan'

@@ -1,11 +1,11 @@
 import EmailAddress, { EmailAddressStatus } from '#models/email_address'
-import { suppliers } from '../email_address_supplier/index.js'
-import { SupplierEmailAddress } from '../email_address_supplier/supplier_email_address.js'
+import { suppliers } from '#email_address_supplier/index'
+import { SupplierEmailAddress } from '#email_address_supplier/supplier_email_address'
 import {
   EmailAddressData,
   EmailAddressSupplierContract,
   EmailAddressSupplierName,
-} from '../email_address_supplier/types.js'
+} from '#email_address_supplier/types'
 
 export default class EmailAddressService {
   static async synchronise() {

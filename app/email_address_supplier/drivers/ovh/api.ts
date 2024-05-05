@@ -1,5 +1,5 @@
 import nodeOvh from 'ovh'
-import { EmailAddressSupplierError } from '../../errors.js'
+import { EmailAddressSupplierError } from '#email_address_supplier/errors'
 
 const ovhAPI = nodeOvh({
   endpoint: 'ovh-eu',

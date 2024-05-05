@@ -1,11 +1,11 @@
 import { EmailAddressPassword } from '#models/email_address'
 import vine from '@vinejs/vine'
-import { suppliersNames } from '../email_address_supplier/index.js'
+import { suppliersNames } from '#email_address_supplier/index'
 import {
   EmailAddressDomain,
   EmailAddressName,
   EmailAddressSupplierName,
-} from '../email_address_supplier/types.js'
+} from '#email_address_supplier/types'
 
 vine.convertEmptyStringsToNull = true
 

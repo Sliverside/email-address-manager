@@ -56,6 +56,9 @@
         @error('E_BAD_CSRF_TOKEN')
           <div class="toastKeeper error">{{ $message }}</div>
         @end
+        @error('E_INVALID_CREDENTIALS')
+          <div class="toastKeeper error">{{ $message }}</div>
+        @end
         @flashMessage('success')
           <div class="toastKeeper success">{{ $message }}</div>
         @end

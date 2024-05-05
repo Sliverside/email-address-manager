@@ -4,7 +4,7 @@ import type {
   EmailAddressDomain,
   EmailAddressName,
   EmailAddressSupplierName,
-} from '../email_address_supplier/types.js'
+} from '#email_address_supplier/types'
 
 export type EmailAddressID = Opaque<'EmailAddressID', string>
 export type EmailAddressPassword = Opaque<'EmailPassword', string>
