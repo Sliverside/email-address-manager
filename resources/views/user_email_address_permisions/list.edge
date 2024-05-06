@@ -1,0 +1,46 @@
+@layout({title: 'Users permissions'})
+  <h1>Users permissions</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Email address</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(permissions.length > 0)
+        @each(permission in permissions)
+          <tr>
+            <td>{{ permission.user.email }}</td>
+            <td>{{ permission.name + '@' + permission.domain }}</td>
+            <td>
+              <form class="inline-form" method="post" action="{{ route('permissions.delete') }}?_method=DELETE" up-submit up-disable>
+                {{ csrfField() }}
+                <input type="hidden" name="id", value="{{ permission.id }}">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        @end
+      @else
+        <tr><td colspan="3">You dont own any user permission</td></tr>
+      @end
+      @if(auth.user.isAdmin())
+        <tr>
+          <td colspan="3">
+            <a {{ html.attrs({
+              href: route('permissions.create'),
+              'up-layer': 'new modal',
+              'up-accept-location': route('permissions.list'),
+              'up-on-accepted': "up.reload('main')"
+            }) }}>
+              <b>Create an user permission</b>
+            </a>
+          </td>
+        </tr>
+      @end
+    </tbody>
+  </table>
+@end

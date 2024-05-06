@@ -7,13 +7,19 @@
 |
 */
 
-const EmailsController = () => import('#controllers/email_addresses_controller')
-const RegisterController = () => import('#controllers/auth/register_controller')
-const LoginController = () => import('#controllers/auth/login_controller')
 import { EmailAddressID } from '#models/email_address'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const PermissionDeleteController = () =>
+  import('#controllers/user_email_address_permissions/delete_controller')
+const EmailsController = () => import('#controllers/email_addresses_controller')
+const RegisterController = () => import('#controllers/auth/register_controller')
+const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
+const PermissionsListController = () =>
+  import('#controllers/user_email_address_permissions/list_controller')
+const PermissionsCreateController = () =>
+  import('#controllers/user_email_address_permissions/create_controller')
 
 router.get('/', ({ view }) => view.render('pages/home')).as('home')
 
@@ -48,3 +54,14 @@ router
   .use(middleware.auth())
   .prefix('emails')
   .as('emails')
+
+router
+  .group(() => {
+    router.get('/', [PermissionsListController]).as('list')
+    router.get('/create', [PermissionsCreateController, 'show']).as('create')
+    router.post('/create', [PermissionsCreateController, 'store']).as('store')
+    router.delete('/delete', [PermissionDeleteController]).as('delete')
+  })
+  .use(middleware.auth())
+  .prefix('permissions')
+  .as('permissions')

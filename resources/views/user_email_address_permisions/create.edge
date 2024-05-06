@@ -1,0 +1,15 @@
+@layout({title: 'Create a new user permission'})
+  <h1>Create a new user permission</h1>
+  <form method="post" action="{{ route('permissions.store') }}" up-submit up-disable>
+    {{ csrfField() }}
+    @!input({
+      name: 'domain',
+      placeholder: 'domain',
+      type: 'select',
+      options:  [ { label: '-- Choose a domain --' } ].concat(domains)
+    })
+    @!input({ name: 'name', placeholder: 'name' })
+    @!input({ name: 'userEmail', type: 'email', placeholder: 'User email' })
+    <button type="submit">Create</button>
+  </form>
+@end

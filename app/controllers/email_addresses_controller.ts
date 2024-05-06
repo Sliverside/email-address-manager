@@ -9,19 +9,44 @@ import {
   EmailAddressSupplierError,
 } from '#email_address_supplier/errors'
 import db from '@adonisjs/lucid/services/db'
+import { Roles } from '#models/role'
+import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 
 export default class EmailsController {
   /**
    * Display a list of resource
    */
-  async index({ view }: HttpContext) {
+  async index({ view, auth }: HttpContext) {
     await EmailAddressService.synchronise()
-    return view.render('email_addresses/list', {
-      emails: await EmailAddress.query().orderBy(
-        db.raw("case when `status` = 'active' then 1 else 0 end"),
-        'desc'
-      ),
-    })
+
+    const user = auth.getUserOrFail()
+
+    let query: ModelQueryBuilderContract<typeof EmailAddress, EmailAddress> | null = null
+
+    if (user.roleId === Roles.SUPER_ADMIN) {
+      query = EmailAddress.query()
+    } else {
+      await user.load('EmailAddressPermissions')
+
+      const permissions = user.EmailAddressPermissions
+
+      if (permissions.length > 0) {
+        query = EmailAddress.query()
+
+        for (const permission of permissions) {
+          query.orWhere((builder) => {
+            builder.where('domain', permission.domain)
+            if (permission.name !== '*') builder.andWhere('name', permission.name)
+          })
+        }
+      }
+    }
+
+    const orderBy = db.raw("case when `status` = 'active' then 1 else 0 end")
+
+    const emails = query ? await query.orderBy(orderBy, 'desc') : []
+
+    return view.render('email_addresses/list', { emails })
   }
 
   /**
@@ -97,11 +122,8 @@ export default class EmailsController {
     const email = await EmailAddress.find(id)
 
     if (!email) {
-      session.flashErrors({
-        error: "this email doesn't exist",
-      })
-      response.redirect().toRoute('emails.index')
-      return
+      session.flashErrors({ error: "this email doesn't exist" })
+      return response.redirect().toRoute('emails.index')
     }
 
     return view.render('email_addresses/show', { email: email })
@@ -115,8 +137,7 @@ export default class EmailsController {
 
     if (!email) {
       session.flashErrors({ error: "this email doesn't exist" })
-      response.redirect().toRoute('emails.index')
-      return
+      return response.redirect().toRoute('emails.index')
     }
 
     return view.render('email_addresses/edit', { email: email })
@@ -131,8 +152,7 @@ export default class EmailsController {
     if (!email) {
       session.flashErrors({ error: "this email doesn't exist" })
 
-      response.redirect().back()
-      return
+      return response.redirect().back()
     }
 
     const data = request.all()
@@ -162,8 +182,7 @@ export default class EmailsController {
       session.flashExcept(['_csrf', '_method', 'password', 'password_confirmation'])
       session.flashErrors({ error: message })
 
-      response.redirect().back()
-      return
+      return response.redirect().back()
     }
 
     email.merge(payload)
@@ -173,7 +192,7 @@ export default class EmailsController {
       success: `the email address "${email}" has been updated with success !`,
     })
 
-    response.redirect().toRoute('emails.index')
+    return response.redirect().toRoute('emails.index')
   }
 
   /**
@@ -185,8 +204,7 @@ export default class EmailsController {
     if (!email) {
       session.flashErrors({ error: "this email doesn't exist" })
 
-      response.redirect().back()
-      return
+      return response.redirect().back()
     }
 
     const supplier = EmailAddressService.getSupplier(email.supplierName)
@@ -211,8 +229,7 @@ export default class EmailsController {
 
       session.flashErrors({ error: message })
 
-      response.redirect().back()
-      return
+      return response.redirect().back()
     }
 
     email.status = EmailAddressStatus.TRASHED
@@ -222,6 +239,6 @@ export default class EmailsController {
       success: `the email address "${email}" has been trashed !`,
     })
 
-    response.redirect().toRoute('emails.index')
+    return response.redirect().toRoute('emails.index')
   }
 }

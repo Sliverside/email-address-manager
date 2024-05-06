@@ -22,6 +22,9 @@
             'up-accept-location': route('emails.index'),
             'up-on-accepted': "up.reload('main')"
           })
+          @if(auth.user.isAdmin())
+            @!menuLink({href: route('permissions.list'), label: 'User permissions'})
+          @end
         @end
       </ul>
       <ul>

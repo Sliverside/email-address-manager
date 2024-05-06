@@ -13,6 +13,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('roles')
         .defaultTo(Roles.USER)
+        .onDelete('RESTRICT')
         .notNullable()
       table.string('full_name').nullable()
       table.string('email', 254).notNullable().unique()
