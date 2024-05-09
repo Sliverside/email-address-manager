@@ -10,7 +10,7 @@ export interface EmailAddressData {
   name: EmailAddressName
   domain: EmailAddressDomain
   description: string | null
-  password?: EmailAddressPassword
+  password: EmailAddressPassword | null
 }
 
 export type EmailAddressEditPayload<Data extends EmailAddressData = EmailAddressData> = Partial<

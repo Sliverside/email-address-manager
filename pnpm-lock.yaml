@@ -50,6 +50,9 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
+      validator:
+        specifier: ^13.12.0
+        version: 13.12.0
     devDependencies:
       '@adonisjs/assembler':
         specifier: ^7.5.2
@@ -84,6 +87,9 @@ importers:
       '@types/node':
         specifier: ^20.12.11
         version: 20.12.11
+      '@types/validator':
+        specifier: ^13.11.9
+        version: 13.11.9
       eslint:
         specifier: ^8.57.0
         version: 8.57.0

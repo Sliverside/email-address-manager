@@ -16,7 +16,9 @@
       placeholder: 'domain',
       type: 'select',
       disabled: true,
-      options:  [ { label: '-- Choose a domain --' } ]
+      options:  [ { label: '-- Choose a domain --' } ],
+      value: old('domain') || false,
+      errorName: 'domain'
     })
     @each(supplier in suppliers)
       @!input({
@@ -25,7 +27,9 @@
         style: 'display:none',
         placeholder: 'domain',
         type: 'select',
-        options:  [ { label: '-- Choose a domain --' } ].concat(supplier.domains)
+        options:  [ { label: '-- Choose a domain --' } ].concat(supplier.domains),
+        value: old('domain') || false,
+        errorName: 'domain'
       })
     @end
     @!input({

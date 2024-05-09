@@ -1,7 +1,9 @@
 import EmailAddress, { EmailAddressStatus } from '#models/email_address'
 import EmailAddressService from '#services/email_address_service'
-import { updateEmailValidator } from '#validators/email_address'
-import { createSupplierEmailValidator } from '#validators/supplier_email_address'
+import {
+  createSupplierEmailValidator,
+  updateSupplierEmailValidator,
+} from '#validators/supplier_email_address'
 import type { HttpContext } from '@adonisjs/core/http'
 import { suppliers } from '#email_address_supplier/index'
 import {
@@ -156,8 +158,7 @@ export default class EmailsController {
     }
 
     const data = request.all()
-    if (data.password && data.password.trim() === '') delete data.password
-    const payload = await updateEmailValidator.validate(data)
+    const payload = await updateSupplierEmailValidator.validate(data)
 
     const supplier = EmailAddressService.getSupplier(email.supplierName)
 

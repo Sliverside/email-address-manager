@@ -6,7 +6,10 @@ import {
   EmailAddressName,
   EmailAddressSupplierName,
 } from '#email_address_supplier/types'
+import { emailAddressNameRule } from '#rules/email_address_name'
+import { domainRule } from '#rules/domain'
 
+vine.convertEmptyStringsToNull = true
 vine.convertEmptyStringsToNull = true
 
 export const createSupplierEmailValidator = vine.compile(
@@ -21,6 +24,7 @@ export const createSupplierEmailValidator = vine.compile(
     description: vine
       .string()
       .trim()
+      .nullable()
       .optional()
       .transform((v) => (v ? v : null) as string | null),
 
@@ -39,12 +43,34 @@ export const createSupplierEmailValidator = vine.compile(
       .string()
       .trim()
       .toLowerCase()
+      .use(emailAddressNameRule())
       .transform((v) => v as EmailAddressName),
 
     domain: vine
       .string()
       .trim()
       .toLowerCase()
+      .use(domainRule())
       .transform((v) => v as EmailAddressDomain),
+  })
+)
+
+export const updateSupplierEmailValidator = vine.compile(
+  vine.object({
+    password: vine
+      .string()
+      .minLength(8)
+      .maxLength(20)
+      .trim()
+      .transform((v) => (v ? v : null) as EmailAddressPassword | null)
+      .optional()
+      .nullable(),
+
+    description: vine
+      .string()
+      .trim()
+      .nullable()
+      .optional()
+      .transform((v) => (v ? v : null) as string | null),
   })
 )

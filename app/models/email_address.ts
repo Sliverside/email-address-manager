@@ -37,7 +37,7 @@ export default class EmailAddress extends BaseModel {
   declare domain: EmailAddressDomain
 
   @column()
-  declare password: EmailAddressPassword
+  declare password: EmailAddressPassword | null
 
   @column()
   declare description: string | null

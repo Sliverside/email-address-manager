@@ -1,4 +1,4 @@
-@let(value = old($props.name) || $props.value || null)
+@let(value = ($props.name ? old($props.name) : null) || $props.value || null)
 
 <label {{
   $props
@@ -29,7 +29,7 @@
     @end
   
   
-  @inputError($props.name)
+  @inputError($props.name || $props.errorName)
     @each(message in $messages)
       <p class="inputError">{{ message }}</p>
     @end

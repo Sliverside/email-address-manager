@@ -15,6 +15,7 @@
       "#events/*": ["./app/events/*.js"],
       "#middleware/*": ["./app/middleware/*.js"],
       "#validators/*": ["./app/validators/*.js"],
+      "#rules/*": ["./app/rules/*.js"],
       "#providers/*": ["./providers/*.js"],
       "#policies/*": ["./app/policies/*.js"],
       "#abilities/*": ["./app/abilities/*.js"],
