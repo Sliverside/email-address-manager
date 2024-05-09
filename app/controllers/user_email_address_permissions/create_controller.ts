@@ -36,7 +36,6 @@ const validator = vine.compile(
           .where('name', value)
           .first()
 
-        console.log(name)
         return name !== null
       }),
     userEmail: vine.string().email().normalizeEmail(),
