@@ -8,6 +8,7 @@ import type {
   EmailAddressEditPayload,
   EmailAddressData,
   EmailAddressSupplierName,
+  EmailAddressNameAndDomain,
 } from '../types.js'
 
 const supplierName: EmailAddressSupplierName = 'fake'
@@ -15,7 +16,7 @@ const supplierName: EmailAddressSupplierName = 'fake'
 interface FakeSupplierEmailAddress {
   name: string
   domain: string
-  password: string
+  password: string | null
   description: string | null
 }
 
@@ -46,6 +47,7 @@ export class Fake implements EmailAddressSupplierContract {
         name: name as EmailAddressName,
         domain: domain as EmailAddressDomain,
         description: description,
+        password: null,
       })
     })
   }
@@ -69,6 +71,7 @@ export class Fake implements EmailAddressSupplierContract {
       name: fakeEmailAddress.name as EmailAddressName,
       domain: fakeEmailAddress.domain as EmailAddressDomain,
       description: fakeEmailAddress.description,
+      password: null,
     })
   }
 
@@ -83,7 +86,7 @@ export class Fake implements EmailAddressSupplierContract {
   }
 
   async edit(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     data: EmailAddressEditPayload
   ): Promise<void> {
     const fakeEmailAddress = Array.from(emailAddresses.values()).find((e) => {
@@ -99,7 +102,7 @@ export class Fake implements EmailAddressSupplierContract {
   }
 
   async changePassword(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     password: EmailAddressPassword
   ): Promise<void> {
     return this.edit({ name, domain }, { password })

@@ -13,6 +13,8 @@ export interface EmailAddressData {
   password: EmailAddressPassword | null
 }
 
+export type EmailAddressNameAndDomain = Pick<EmailAddressData, 'name' | 'domain'>
+
 export type EmailAddressEditPayload<Data extends EmailAddressData = EmailAddressData> = Partial<
   Omit<Data, 'name' | 'domain' | 'status'>
 >
@@ -30,12 +32,12 @@ export interface EmailAddressSupplierContract<Data extends EmailAddressData = Em
   }): Promise<SupplierEmailAddress>
   create(payload: Required<Data>): Promise<void>
   edit(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     data: EmailAddressEditPayload<Data>
   ): Promise<void>
   changePassword(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     password: EmailAddressPassword
   ): Promise<void>
-  delete({ name, domain }: { name: EmailAddressName; domain: EmailAddressDomain }): Promise<void>
+  delete({ name, domain }: EmailAddressNameAndDomain): Promise<void>
 }

@@ -11,6 +11,7 @@ import type {
   EmailAddressEditPayload,
   EmailAddressData,
   EmailAddressSupplierName,
+  EmailAddressNameAndDomain,
 } from '#email_address_supplier/types'
 import { ovhRequest } from './api.js'
 
@@ -67,6 +68,7 @@ export class OvhMxplan implements EmailAddressSupplierContract {
           name,
           domain,
           description: accountDetail.description || null,
+          password: null,
         })
       })
       .catch((error) => {
@@ -91,7 +93,7 @@ export class OvhMxplan implements EmailAddressSupplierContract {
   }
 
   async edit(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     data: EmailAddressEditPayload
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
@@ -138,7 +140,7 @@ export class OvhMxplan implements EmailAddressSupplierContract {
   }
 
   async changePassword(
-    { name, domain }: { name: EmailAddressName; domain: EmailAddressDomain },
+    { name, domain }: EmailAddressNameAndDomain,
     password: EmailAddressPassword
   ): Promise<void> {
     return this.edit({ name, domain }, { password })

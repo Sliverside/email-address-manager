@@ -4,6 +4,13 @@ import Toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import '../css/app.css'
 
+up.on('up:link:follow', console.log)
+up.on('up:fragment:loaded', function (event) {
+  if (event?.response?.status === 403) {
+    Toastr.error('You do not have the permission to do this')
+    event?.preventDefault()
+  }
+})
 up.compiler('.toastKeeper', function (/** @type {HTMLElement} */ element) {
   if (element.classList.contains('error')) Toastr.error(element.innerHTML)
   else if (element.classList.contains('success')) Toastr.success(element.innerHTML)

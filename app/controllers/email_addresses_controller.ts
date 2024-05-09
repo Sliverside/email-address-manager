@@ -54,25 +54,46 @@ export default class EmailsController {
   /**
    * Display form to create a new record
    */
-  async create({ view }: HttpContext) {
-    return view.render('email_addresses/create', {
-      suppliers: await Promise.all(
-        suppliers.map((s) =>
-          s.listDomains().then((domains) => ({
+  async create({ view, bouncer, auth }: HttpContext) {
+    await bouncer.with('EmailAddressPolicy').authorize('create')
+
+    const user = auth.getUserOrFail()
+    await user.load('EmailAddressPermissions')
+
+    const permissions = user.EmailAddressPermissions
+
+    const suppliersFormatted = await Promise.all(
+      suppliers.map((s) =>
+        s.listDomains().then((domains) => {
+          if (!user.isSuperAdmin()) {
+            domains = domains.filter((domain) =>
+              permissions.find((p) => p.domain === domain && p.name === '*')
+            )
+          }
+
+          return {
             name: s.name,
             domains: domains.map((domain) => ({ value: domain })),
-          }))
-        )
-      ),
+          }
+        })
+      )
+    )
+
+    suppliersFormatted.forEach((s) => console.log(s))
+
+    return view.render('email_addresses/create', {
+      suppliers: suppliersFormatted.filter((s) => s.domains.length > 0),
     })
   }
 
   /**
    * Handle form submission for the create action
    */
-  async store({ request, response, session }: HttpContext) {
+  async store({ bouncer, request, response, session }: HttpContext) {
     const data = request.all()
     let payload = await createSupplierEmailValidator.validate(data)
+
+    await bouncer.with('EmailAddressPolicy').authorize('store', payload)
 
     const supplier = EmailAddressService.getSupplier(payload.supplierName)
 
@@ -120,13 +141,15 @@ export default class EmailsController {
   /**
    * Show individual record
    */
-  async show({ params: { id }, view, response, session }: HttpContext) {
+  async show({ params: { id }, view, response, session, bouncer }: HttpContext) {
     const email = await EmailAddress.find(id)
 
     if (!email) {
       session.flashErrors({ error: "this email doesn't exist" })
       return response.redirect().toRoute('emails.index')
     }
+
+    await bouncer.with('EmailAddressPolicy').authorize('show', email)
 
     return view.render('email_addresses/show', { email: email })
   }
@@ -134,7 +157,7 @@ export default class EmailsController {
   /**
    * Edit individual record
    */
-  async edit({ params: { id }, view, response, session }: HttpContext) {
+  async edit({ params: { id }, view, response, session, bouncer }: HttpContext) {
     const email = await EmailAddress.find(id)
 
     if (!email) {
@@ -142,13 +165,15 @@ export default class EmailsController {
       return response.redirect().toRoute('emails.index')
     }
 
+    await bouncer.with('EmailAddressPolicy').authorize('edit', email)
+
     return view.render('email_addresses/edit', { email: email })
   }
 
   /**
    * Handle form submission for the edit action
    */
-  async update({ params: { id }, request, response, session }: HttpContext) {
+  async update({ params: { id }, request, response, session, bouncer }: HttpContext) {
     const email = await EmailAddress.find(id)
 
     if (!email) {
@@ -156,6 +181,8 @@ export default class EmailsController {
 
       return response.redirect().back()
     }
+
+    await bouncer.with('EmailAddressPolicy').authorize('update', email)
 
     const data = request.all()
     const payload = await updateSupplierEmailValidator.validate(data)

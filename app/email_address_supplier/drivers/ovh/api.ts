@@ -14,7 +14,7 @@ type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 type OvhParams = {
   accountName?: string
   description?: string | null
-  password?: string
+  password?: string | null
 }
 
 export async function ovhRequest(

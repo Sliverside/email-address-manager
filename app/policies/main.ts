@@ -12,4 +12,6 @@
 |
 */
 
-export const policies = {}
+export const policies = {
+  EmailAddressPolicy: () => import('#policies/email_address_policy'),
+}

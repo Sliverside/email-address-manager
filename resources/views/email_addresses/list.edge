@@ -19,16 +19,20 @@
             <td>{{ email.description ?? '' }}</td>
             <td>
               @if(email.isActive)
-                <a
-                  href="{{ route('emails.edit', email) }}"
-                  up-layer="new modal"
-                  up-accept-location="{{ route('emails.index') }}"
-                  up-on-accepted="up.reload('#emailAddress-{{ email.id }}')"
-                ><b>Edit</b></a>
-                <form class="inline-form" up-submit up-disable method="POST" action="{{ route('emails.trash', email) }}?_method=DELETE">
-                  {{ csrfField() }}
-                  <button>Trash</button>
-                </form>
+                @can('EmailAddressPolicy.edit', email)
+                  <a
+                    href="{{ route('emails.edit', email) }}"
+                    up-layer="new modal"
+                    up-accept-location="{{ route('emails.index') }}"
+                    up-on-accepted="up.reload('#emailAddress-{{ email.id }}')"
+                  ><b>Edit</b></a>
+                @end
+                @can('EmailAddressPolicy.delete', email)
+                  <form class="inline-form" up-submit up-disable method="POST" action="{{ route('emails.trash', email) }}?_method=DELETE">
+                    {{ csrfField() }}
+                    <button>Trash</button>
+                  </form>
+                @end
               @end
             </td>
           </aside>
