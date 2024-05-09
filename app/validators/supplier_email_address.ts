@@ -38,11 +38,13 @@ export const createSupplierEmailValidator = vine.compile(
     name: vine
       .string()
       .trim()
+      .toLowerCase()
       .transform((v) => v as EmailAddressName),
 
     domain: vine
       .string()
       .trim()
+      .toLowerCase()
       .transform((v) => v as EmailAddressDomain),
   })
 )
