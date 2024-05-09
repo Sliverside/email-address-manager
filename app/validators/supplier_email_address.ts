@@ -10,7 +10,6 @@ import { emailAddressNameRule } from '#rules/email_address_name'
 import { domainRule } from '#rules/domain'
 
 vine.convertEmptyStringsToNull = true
-vine.convertEmptyStringsToNull = true
 
 export const createSupplierEmailValidator = vine.compile(
   vine.object({
