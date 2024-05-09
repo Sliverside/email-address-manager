@@ -1,6 +1,5 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import edge from 'edge.js'
-import { cuid } from '@adonisjs/core/helpers'
 import { faker } from '@faker-js/faker'
 
 export default class AppProvider {
@@ -17,7 +16,6 @@ export default class AppProvider {
    * The container bindings have booted
    */
   async boot() {
-    edge.global('cuid', cuid)
     edge.global('faker', faker)
   }
 
