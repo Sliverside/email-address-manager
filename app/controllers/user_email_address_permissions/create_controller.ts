@@ -43,11 +43,20 @@ const validator = vine.compile(
 )
 
 export default class CreateController {
-  async show({ view }: HttpContext) {
-    const domains: { domain: string }[] = await db
-      .from(EmailAddress.table)
-      .select('domain')
-      .distinct('domain')
+  async show({ view, auth }: HttpContext) {
+    const user = await auth.getUserOrFail()
+
+    let domains: { domain: string }[]
+
+    if (user.isSuperAdmin()) {
+      domains = await db.from(EmailAddress.table).select('domain').distinct('domain')
+    } else {
+      domains = await db
+        .from(UserEmailAddressPermission.table)
+        .select('domain')
+        .where('user_id', user.id)
+        .distinct('domain')
+    }
 
     return view.render('user_email_address_permisions/create', {
       domains: domains.map((row) => {
@@ -75,7 +84,7 @@ export default class CreateController {
     if (!admin.isSuperAdmin()) {
       const orderBy = db.raw("case when `name` = '*' then 1 else 0 end")
       parentPermission = await admin
-        .related('EmailAddressPermissions')
+        .related('emailAddressPermissions')
         .query()
         .where('domain', payload.domain)
         .where((builder) => {

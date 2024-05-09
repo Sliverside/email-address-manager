@@ -13,6 +13,7 @@ import {
 import db from '@adonisjs/lucid/services/db'
 import { Roles } from '#models/role'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
+import type { EmailAddressDomain } from '#email_address_supplier/types'
 
 export default class EmailsController {
   /**
@@ -28,9 +29,7 @@ export default class EmailsController {
     if (user.roleId === Roles.SUPER_ADMIN) {
       query = EmailAddress.query()
     } else {
-      await user.load('EmailAddressPermissions')
-
-      const permissions = user.EmailAddressPermissions
+      const permissions = user.emailAddressPermissions
 
       if (permissions.length > 0) {
         query = EmailAddress.query()
@@ -55,25 +54,22 @@ export default class EmailsController {
    * Display form to create a new record
    */
   async create({ view, bouncer, auth }: HttpContext) {
-    await bouncer.with('EmailAddressPolicy').authorize('create')
+    const emailAddressPolicy = await bouncer.with('EmailAddressPolicy')
 
-    const user = auth.getUserOrFail()
-    await user.load('EmailAddressPermissions')
-
-    const permissions = user.EmailAddressPermissions
+    emailAddressPolicy.authorize('create')
 
     const suppliersFormatted = await Promise.all(
       suppliers.map((s) =>
-        s.listDomains().then((domains) => {
-          if (!user.isSuperAdmin()) {
-            domains = domains.filter((domain) =>
-              permissions.find((p) => p.domain === domain && p.name === '*')
-            )
+        s.listDomains().then(async (domains) => {
+          const allowedDomains: EmailAddressDomain[] = []
+
+          for (const domain of domains) {
+            if (await emailAddressPolicy.allows('create', domain)) allowedDomains.push(domain)
           }
 
           return {
             name: s.name,
-            domains: domains.map((domain) => ({ value: domain })),
+            domains: allowedDomains.map((domain) => ({ value: domain })),
           }
         })
       )

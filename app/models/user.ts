@@ -41,7 +41,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare ownedEmailAddressPermissions: HasMany<typeof UserEmailAddressPermission>
 
   @hasMany(() => UserEmailAddressPermission, { foreignKey: 'userId' })
-  declare EmailAddressPermissions: HasMany<typeof UserEmailAddressPermission>
+  declare emailAddressPermissions: HasMany<typeof UserEmailAddressPermission>
 
   isAdmin() {
     return [Roles.SUPER_ADMIN, Roles.ADMIN].includes(this.roleId)
